@@ -1,3 +1,16 @@
 spring:
   application:
     name: banking-api
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/banking_api
+    username: root
+    password: Neto@990733
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
