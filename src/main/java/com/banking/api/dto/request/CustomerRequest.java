@@ -1,26 +1,48 @@
-package com.banking.api.dto.response;
+package com.banking.api.dto.request;
 
 import com.banking.api.entity.Account;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CustomerResponse {
+public class CustomerRequest {
 
     private Long id;
+    @NotBlank(message = "Por favor! Digite seu nome, ele é obrigatório!")
+    @Size(min = 3, max = 150)
     private String name;
+
+    @NotBlank(message = "CPF é Obrigatório!!")
+    @CPF
     private String cpf;
+
+    @NotBlank(message = "Email é obrigatório!")
+    @Size(max = 200)
+    @Email
     private String email;
+
+    @NotNull(message = "Digite seu numero de telefone! é obrigatório!!")
     private String phoneNumber;
+
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @NotNull(message = "Esse campo não pode ser vazio!!")
     private LocalDate birthDate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
 
-    public CustomerResponse() {
+    public CustomerRequest() {
     }
 
-    public CustomerResponse(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, LocalDateTime createdAt, LocalDateTime updateAt) {
+    public CustomerRequest(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, LocalDateTime createdAt, LocalDateTime updateAt) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
@@ -32,10 +54,10 @@ public class CustomerResponse {
     }
 
 
-    private List<AccountResponse> accounts;
+    private List<AccountRequest> accounts;
 
 
-    public List<AccountResponse> getAccounts() {
+    public List<AccountRequest> getAccounts() {
         return accounts;
     }
 

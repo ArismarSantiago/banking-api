@@ -1,34 +1,45 @@
-package com.banking.api.entity;
+package com.banking.api.dto.response;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import org.hibernate.KeyType;
+import com.banking.api.entity.Account;
+import com.banking.api.enums.PixKeyType;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PixKay {
+public class PixKeyResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    //enum: private PixKayType keytype;
-    @Column(nullable = false)
+    private PixKeyType keyType;
     private String keyValue;
-    @Column(nullable = false)
     private Boolean active;
     private LocalDateTime createdAt;
 
-    public PixKay() {
+    public PixKeyResponse() {
     }
 
-    public PixKay(Long id, String keyValue, Boolean active, LocalDateTime createdAt) {
+    public PixKeyResponse(Long id, PixKeyType keyType, String keyValue, Boolean active, LocalDateTime createdAt, AccountResponse account) {
         this.id = id;
+        this.keyType = keyType;
         this.keyValue = keyValue;
         this.active = active;
         this.createdAt = createdAt;
+        this.account = account;
+    }
+
+
+    private AccountResponse account;
+
+    public PixKeyType getKeyType() {
+        return keyType;
+    }
+
+    public void setKeyType(PixKeyType keyType) {
+        this.keyType = keyType;
+    }
+
+    public AccountResponse getAccount() {
+        return account;
     }
 
     public Long getId() {
@@ -63,15 +74,4 @@ public class PixKay {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PixKay pixKay)) return false;
-        return Objects.equals(id, pixKay.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

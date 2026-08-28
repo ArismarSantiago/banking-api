@@ -1,9 +1,12 @@
 package com.banking.api.entity;
 
+import com.banking.api.enums.AccountStatus;
+import com.banking.api.enums.AccountType;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -17,20 +20,72 @@ public class Account {
     private String accountNumber;
     @Column(length = 30)
     private BigDecimal balance;
-    // enum: private AccountType type;
-    // enum: AccountStatus status;
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
+    @Enumerated(EnumType.STRING)
+    private AccountStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Account() {
     }
 
-    public Account(Long id, String accountNumber, BigDecimal balance, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    @OneToMany(mappedBy = "account")
+    private List<PixKey> pixKeys;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "account")
+    private List<Transaction> transactions;
+
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
+
+    public Account(Long id, String accountNumber, BigDecimal balance, AccountType type, AccountStatus status, LocalDateTime createdAt, LocalDateTime updatedAt, Customer customer, Agency agency) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.balance = balance;
+        this.type = type;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.customer = customer;
+        this.agency = agency;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+    public void setStatus(AccountStatus status) {
+        this.status = status;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public AccountStatus getStatus() {
+        return status;
+    }
+
+    public List<PixKey> getPixKeys() {
+        return pixKeys;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public Agency getAgency() {
+        return agency;
     }
 
     public Long getId() {

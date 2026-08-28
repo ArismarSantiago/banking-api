@@ -1,44 +1,38 @@
-package com.banking.api.entity;
+package com.banking.api.dto.request;
 
+import com.banking.api.entity.Account;
 import com.banking.api.enums.TransferStatus;
 import com.banking.api.enums.TransferType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
-@Table(name = "transfer_tb")
-public class Transfer {
+
+public class TransferRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(nullable = false)
+
     @Positive
+    @NotNull
     private BigDecimal amount;
-    @Enumerated(EnumType.STRING)
     private TransferType type;
-    @Enumerated(EnumType.STRING)
     private TransferStatus status;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime createdAt;
 
-    public Transfer() {
+    public TransferRequest() {
     }
 
+    private AccountRequest sourceAccount;
 
+    private AccountRequest destinationAccount;
 
-    @ManyToOne
-    @JoinColumn(name = "source_account_id")
-    private Account sourceAccount;
-
-    @ManyToOne
-    @JoinColumn(name = "destination_account_id")
-    private Account destinationAccount;
-
-    public Transfer(Long id, BigDecimal amount, TransferType type, TransferStatus status, LocalDateTime createdAt, Account sourceAccount, Account destinationAccount) {
+    public TransferRequest(Long id, BigDecimal amount, TransferType type, TransferStatus status, LocalDateTime createdAt, AccountRequest sourceAccount, AccountRequest destinationAccount) {
         this.id = id;
         this.amount = amount;
         this.type = type;
@@ -65,11 +59,11 @@ public class Transfer {
         return status;
     }
 
-    public Account getSourceAccount() {
+    public AccountRequest getSourceAccount() {
         return sourceAccount;
     }
 
-    public Account getDestinationAccount() {
+    public AccountRequest getDestinationAccount() {
         return destinationAccount;
     }
 
@@ -97,15 +91,4 @@ public class Transfer {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) return true;
-        if (!(o instanceof Transfer transfer)) return false;
-        return Objects.equals(id, transfer.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

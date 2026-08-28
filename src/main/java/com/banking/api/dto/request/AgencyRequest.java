@@ -1,44 +1,42 @@
-package com.banking.api.entity;
+package com.banking.api.dto.request;
 
+import com.banking.api.dto.request.AccountRequest;
+import com.banking.api.entity.Account;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "agency_tb")
-public class Agency {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class AgencyRequest {
+
     private Long id;
-    @Column(nullable = false, length = 4)
+    @NotBlank
     private String code;
-    @Column(length = 150, nullable = false)
+    @Size(min = 3, max = 30)
+    @NotBlank(message = "Digite o nome da agencia!")
     private String name;
-    @Column(length = 20, nullable = false)
+    @Size(min = 3,max = 20)
+    @NotBlank(message = "Digite a cidade!")
     private String city;
-    @Column(length = 20, nullable = false)
+    @Size(min = 3,max = 20)
+    @NotBlank(message = "Digite o estado!")
     private String state;
 
-    public Agency() {
+    public AgencyRequest() {
     }
 
+    private List<AccountRequest> accounts;
 
-    @OneToMany(mappedBy = "agency")
-    private List<Account> accounts;
-
-
-    public Agency(Long id, String code, String city, String name, String state) {
+    public AgencyRequest(Long id, String code, String name, String city, String state) {
         this.id = id;
         this.code = code;
-        this.city = city;
         this.name = name;
+        this.city = city;
         this.state = state;
-    }
-
-    public List<Account> getAccounts() {
-        return accounts;
     }
 
     public Long getId() {
@@ -81,15 +79,8 @@ public class Agency {
         this.state = state;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return  true;
-        if (!(o instanceof Agency agency)) return false;
-        return Objects.equals(id, agency.id);
+    public List<AccountRequest> getAccounts() {
+        return accounts;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

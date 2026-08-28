@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -38,6 +39,15 @@ public class Customer {
         this.birthDate = birthDate;
         this.createdAt = createdAt;
         this.updateAt = updateAt;
+    }
+
+
+    @OneToMany(mappedBy = "costumer")
+    private List<Account> accounts;
+
+
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
     public Long getId() {

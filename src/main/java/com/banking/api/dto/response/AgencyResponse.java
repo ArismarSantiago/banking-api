@@ -1,44 +1,31 @@
-package com.banking.api.entity;
+package com.banking.api.dto.response;
 
+import com.banking.api.entity.Account;
 import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "agency_tb")
-public class Agency {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class AgencyResponse {
+
     private Long id;
-    @Column(nullable = false, length = 4)
     private String code;
-    @Column(length = 150, nullable = false)
     private String name;
-    @Column(length = 20, nullable = false)
     private String city;
-    @Column(length = 20, nullable = false)
     private String state;
 
-    public Agency() {
+    public AgencyResponse() {
     }
 
+    private List<AccountResponse> accounts;
 
-    @OneToMany(mappedBy = "agency")
-    private List<Account> accounts;
-
-
-    public Agency(Long id, String code, String city, String name, String state) {
+    public AgencyResponse(Long id, String code, String name, String city, String state) {
         this.id = id;
         this.code = code;
-        this.city = city;
         this.name = name;
+        this.city = city;
         this.state = state;
-    }
-
-    public List<Account> getAccounts() {
-        return accounts;
     }
 
     public Long getId() {
@@ -81,15 +68,8 @@ public class Agency {
         this.state = state;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return  true;
-        if (!(o instanceof Agency agency)) return false;
-        return Objects.equals(id, agency.id);
+    public List<AccountResponse> getAccounts() {
+        return accounts;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
