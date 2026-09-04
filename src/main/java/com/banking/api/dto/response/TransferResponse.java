@@ -18,17 +18,13 @@ public class TransferResponse {
     private TransferStatus status;
     private LocalDateTime createdAt;
 
+private CustomerSummaryResponse sourceAccount;
+private CustomerSummaryResponse destinationAccount;
+
     public TransferResponse() {
     }
 
-
-
-
-    private AccountResponse sourceAccount;
-
-    private AccountResponse destinationAccount;
-
-    public TransferResponse(Long id, BigDecimal amount, TransferType type, TransferStatus status, LocalDateTime createdAt, AccountResponse sourceAccount, AccountResponse destinationAccount) {
+    public TransferResponse(Long id, BigDecimal amount, TransferType type, TransferStatus status, LocalDateTime createdAt, CustomerSummaryResponse sourceAccount, CustomerSummaryResponse destinationAccount) {
         this.id = id;
         this.amount = amount;
         this.type = type;
@@ -36,31 +32,6 @@ public class TransferResponse {
         this.createdAt = createdAt;
         this.sourceAccount = sourceAccount;
         this.destinationAccount = destinationAccount;
-    }
-
-
-    public void setType(TransferType type) {
-        this.type = type;
-    }
-
-    public void setStatus(TransferStatus status) {
-        this.status = status;
-    }
-
-    public TransferType getType() {
-        return type;
-    }
-
-    public TransferStatus getStatus() {
-        return status;
-    }
-
-    public AccountResponse getSourceAccount() {
-        return sourceAccount;
-    }
-
-    public AccountResponse getDestinationAccount() {
-        return destinationAccount;
     }
 
     public Long getId() {
@@ -79,6 +50,22 @@ public class TransferResponse {
         this.amount = amount;
     }
 
+    public TransferType getType() {
+        return type;
+    }
+
+    public void setType(TransferType type) {
+        this.type = type;
+    }
+
+    public TransferStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TransferStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -87,4 +74,19 @@ public class TransferResponse {
         this.createdAt = createdAt;
     }
 
+    public CustomerSummaryResponse getSourceAccount() {
+        return sourceAccount;
+    }
+
+    public void setSourceAccount(CustomerSummaryResponse sourceAccount) {
+        this.sourceAccount = sourceAccount;
+    }
+
+    public CustomerSummaryResponse getDestinationAccount() {
+        return destinationAccount;
+    }
+
+    public void setDestinationAccount(CustomerSummaryResponse destinationAccount) {
+        this.destinationAccount = destinationAccount;
+    }
 }

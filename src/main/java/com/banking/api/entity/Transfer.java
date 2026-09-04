@@ -5,16 +5,18 @@ import com.banking.api.enums.TransferType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "transfer_tb")
 public class Transfer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
     @Positive
@@ -23,6 +25,7 @@ public class Transfer {
     private TransferType type;
     @Enumerated(EnumType.STRING)
     private TransferStatus status;
+    @CreatedDate
     private LocalDateTime createdAt;
 
     public Transfer() {
@@ -47,6 +50,15 @@ public class Transfer {
         this.sourceAccount = sourceAccount;
         this.destinationAccount = destinationAccount;
     }
+
+    public void setSourceAccount(Account sourceAccount) {
+        this.sourceAccount = sourceAccount;
+    }
+
+    public void setDestinationAccount(Account destinationAccount) {
+        this.destinationAccount = destinationAccount;
+    }
+
 
 
     public void setType(TransferType type) {

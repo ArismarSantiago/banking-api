@@ -3,11 +3,13 @@ package com.banking.api.entity;
 import com.banking.api.enums.TransactionType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "transaction_tb")
 public class Transaction {
@@ -25,6 +27,7 @@ public class Transaction {
     private BigDecimal balanceAfter;
     @Column(length = 200)
     private String description;
+    @CreatedDate
     private LocalDateTime createdAt;
 
     public Transaction() {
@@ -44,6 +47,10 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
 
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 
     public Account getAccount() {
         return account;
@@ -107,6 +114,10 @@ public class Transaction {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    public void sert() {
+
     }
 }
 

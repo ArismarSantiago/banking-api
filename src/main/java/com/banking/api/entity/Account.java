@@ -2,13 +2,18 @@ package com.banking.api.entity;
 
 import com.banking.api.enums.AccountStatus;
 import com.banking.api.enums.AccountType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "account_tb")
 public class Account {
@@ -24,7 +29,13 @@ public class Account {
     private AccountType type;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @CreatedDate
     private LocalDateTime createdAt;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     public Account() {
@@ -53,6 +64,14 @@ public class Account {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.customer = customer;
+        this.agency = agency;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public void setAgency(Agency agency) {
         this.agency = agency;
     }
 

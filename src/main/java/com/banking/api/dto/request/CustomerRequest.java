@@ -1,11 +1,14 @@
 package com.banking.api.dto.request;
 
 import com.banking.api.entity.Account;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CPF;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
@@ -29,15 +32,20 @@ public class CustomerRequest {
     @Email
     private String email;
 
-    @NotNull(message = "Digite seu numero de telefone! é obrigatório!!")
+    @NotBlank(message = "Digite seu numero de telefone! é obrigatório!!")
     private String phoneNumber;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @NotNull(message = "Esse campo não pode ser vazio!!")
     private LocalDate birthDate;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @CreatedDate
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     public CustomerRequest() {
     }
@@ -50,7 +58,7 @@ public class CustomerRequest {
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.createdAt = createdAt;
-        this.updateAt = updateAt;
+        this.updatedAt = updateAt;
     }
 
 
@@ -118,11 +126,11 @@ public class CustomerRequest {
     }
 
     public LocalDateTime getUpdateAt() {
-        return updateAt;
+        return updatedAt;
     }
 
     public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+        this.updatedAt = updateAt;
     }
 
 }

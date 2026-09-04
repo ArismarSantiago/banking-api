@@ -1,12 +1,16 @@
 package com.banking.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "customer_tb")
 public class Customer {
@@ -24,8 +28,13 @@ public class Customer {
     private String phoneNumber;
     @Column(length = 12, nullable = false)
     private LocalDate birthDate;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @CreatedDate
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     public Customer() {
     }
@@ -38,11 +47,11 @@ public class Customer {
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.createdAt = createdAt;
-        this.updateAt = updateAt;
+        this.updatedAt = updateAt;
     }
 
 
-    @OneToMany(mappedBy = "costumer")
+    @OneToMany(mappedBy = "customer")
     private List<Account> accounts;
 
 
@@ -50,6 +59,7 @@ public class Customer {
         return accounts;
     }
 
+    
     public Long getId() {
         return id;
     }
@@ -107,11 +117,11 @@ public class Customer {
     }
 
     public LocalDateTime getUpdateAt() {
-        return updateAt;
+        return updatedAt;
     }
 
     public void setUpdateAt(LocalDateTime updateAt) {
-        this.updateAt = updateAt;
+        this.updatedAt = updateAt;
     }
 
     @Override

@@ -22,18 +22,14 @@ public class AccountResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private CustomerSummaryResponse customer;
+    private AgencySummaryResponse agency;
+
     public AccountResponse() {
     }
 
-    private List<PixKeyResponse> pixKeys;
 
-    private CustomerResponse customer;
-
-    private List<TransactionResponse> transactions;
-
-    private AgencyResponse agency;
-
-    public AccountResponse(Long id, String accountNumber, BigDecimal balance, AccountType type, AccountStatus status, LocalDateTime createdAt, LocalDateTime updatedAt, CustomerResponse customer, AgencyResponse agency) {
+    public AccountResponse(Long id, String accountNumber, BigDecimal balance, AccountType type, AccountStatus status, LocalDateTime createdAt, LocalDateTime updatedAt, CustomerSummaryResponse customer, AgencySummaryResponse agency) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.balance = balance;
@@ -45,24 +41,24 @@ public class AccountResponse {
         this.agency = agency;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public AccountResponse(Long id, String name) {
     }
 
-    public List<PixKeyResponse> getPixKeys() {
-        return pixKeys;
-    }
 
-    public CustomerResponse getCustomer() {
+    public CustomerSummaryResponse getCustomer() {
         return customer;
     }
 
-    public List<TransactionResponse> getTransactions() {
-        return transactions;
+    public void setCustomer(CustomerSummaryResponse customer) {
+        this.customer = customer;
     }
 
-    public AgencyResponse getAgency() {
+    public AgencySummaryResponse getAgency() {
         return agency;
+    }
+
+    public void setAgency(AgencySummaryResponse agency) {
+        this.agency = agency;
     }
 
     public Long getId() {
@@ -105,6 +101,14 @@ public class AccountResponse {
         this.status = status;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
@@ -112,4 +116,6 @@ public class AccountResponse {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
 }
+
