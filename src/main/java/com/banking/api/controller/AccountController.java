@@ -6,8 +6,14 @@ import com.banking.api.dto.request.WithdrawRequest;
 import com.banking.api.dto.response.AccountResponse;
 import com.banking.api.dto.response.TransactionResponse;
 import com.banking.api.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,18 +25,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/accounts")
-public class AccountController {
+public class AccountController implements com.banking.api.controller.docs.AccountControllerDocs {
 
     @Autowired
     private AccountService service;
 
     @GetMapping
+    @Override
     public ResponseEntity<List<AccountResponse>> findAll() {
         List<AccountResponse> list = service.findAll();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
+    @Override
     public ResponseEntity<AccountResponse> findById(@PathVariable Long id) {
         AccountResponse response = service.findById(id);
         return ResponseEntity.ok(response);
@@ -43,6 +51,7 @@ public class AccountController {
 //    }
 
     @GetMapping("/account_number")
+    @Override
     public ResponseEntity<AccountResponse> findByAccountNumber(@PathVariable String accountNumber) {
         AccountResponse response = service.findByAccountNumber(accountNumber);
         return ResponseEntity.ok(response);
@@ -50,12 +59,14 @@ public class AccountController {
 
 
     @GetMapping("/created_at_account")
+    @Override
     public ResponseEntity<List<AccountResponse>> findByCreatedAtBetween(@PathVariable LocalDate createdAt) {
         List<AccountResponse> list = service.findByCreatedAt(createdAt);
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/updated_at_account")
+    @Override
     public ResponseEntity<List<AccountResponse>> findByUpdatedAtBetween(@PathVariable LocalDate updatedAt){
         List<AccountResponse> list = service.findByUpdatedAtBetween(updatedAt);
 
@@ -63,6 +74,7 @@ public class AccountController {
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<AccountResponse> insert(@Valid @RequestBody CreatedAccountDto dto){
         AccountResponse response = service.insert(dto.getAccount(), dto.getAgencyId(), dto.getCustomerId());
 
@@ -75,6 +87,7 @@ public class AccountController {
     }
 
     @PostMapping("/withdraw")
+    @Override
     public ResponseEntity<TransactionResponse> withdraw(@RequestBody WithdrawRequest request){
         TransactionResponse response = service.withdraw(request);
 
@@ -86,6 +99,7 @@ public class AccountController {
         return ResponseEntity.created(uri).body(response);
     }
     @PostMapping("/deposit")
+    @Override
     public ResponseEntity<TransactionResponse> deposit(@RequestBody DepositRequest request){
         TransactionResponse response = service.deposit(request);
         URI uri = ServletUriComponentsBuilder
@@ -97,6 +111,7 @@ public class AccountController {
     }
 
     @DeleteMapping
+    @Override
     public ResponseEntity<Void> delete(Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();

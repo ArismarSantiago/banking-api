@@ -2,6 +2,7 @@ package com.banking.api.entity;
 
 import com.banking.api.enums.PixKeyType;
 import jakarta.persistence.*;
+import jdk.jfr.BooleanFlag;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -11,7 +12,7 @@ import java.util.Objects;
 public class PixKey {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
     private PixKeyType keyType;
