@@ -41,7 +41,7 @@ public interface AccountControllerDocs {
 
 
     @Operation(
-            summary = "find id", description = "find a specif person id", tags = "Find account by id",
+            summary = "find account by id", description = "find a specif person id", tags = "Find account by id",
 
             responses = {@ApiResponse(description = "Sucess", responseCode = "200",
 
@@ -58,7 +58,7 @@ public interface AccountControllerDocs {
 
 
     @Operation(
-            summary = "find number account", description = "find a specific number account", tags = "find Number Account",
+            summary = "find by number account", description = "find a specific number account", tags = "find Number Account",
             responses = {@ApiResponse(
                     description = "Success",
                     responseCode = "200",
@@ -74,7 +74,7 @@ public interface AccountControllerDocs {
 
 
     @Operation(
-            summary = "find created date account", description = "find all accounts created in specific date", tags = "created date account",
+            summary = "find a created date account", description = "find all accounts created in specific date", tags = "created date account",
             responses = {@ApiResponse(
                     description = "success",
                     responseCode = "200",
@@ -111,7 +111,7 @@ public interface AccountControllerDocs {
                                                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate);
 
 
-    @Operation(summary = "Insert account", description = "Insert account in database", tags = "Insert account",
+    @Operation(summary = "Insert new account", description = "Insert account in database", tags = "Insert account",
             responses = {@ApiResponse(
                     description = "Created",
                     responseCode = "201",
@@ -125,7 +125,7 @@ public interface AccountControllerDocs {
     ResponseEntity<AccountResponse> insert(@Valid @RequestBody CreatedAccountDto dto);
 
 
-    @Operation(summary = "withdraw balance", description = "withdraw balance value in account", tags = "withdraw transaction",
+    @Operation(summary = "withdraw account balance", description = "withdraw balance value in account", tags = "withdraw transaction",
             responses = {@ApiResponse(
                     description = "Created", responseCode = "201",
                     content = @Content(schema = @Schema(implementation = AccountResponse.class))),
@@ -139,7 +139,8 @@ public interface AccountControllerDocs {
 
 
     @Operation(
-            summary = "deposit", description = "deposit between accounts",
+            summary = "deposit amount to account", description = "deposit to account",
+            tags = "deposit amount in account",
             responses = {@ApiResponse(
                     description = "Created",
                     responseCode = "201",
@@ -154,7 +155,7 @@ public interface AccountControllerDocs {
 
 
     @Operation(
-            summary = "Delete Account", description = "Delete account using id", tags = "Delete by AccountId",
+            summary = "Delete Account by id", description = "Delete account using id", tags = "Delete by AccountId",
             responses = {@ApiResponse(
                     description = "No Content",
                     responseCode = "204"),

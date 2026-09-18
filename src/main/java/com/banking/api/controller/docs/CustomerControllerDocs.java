@@ -41,7 +41,7 @@ public interface CustomerControllerDocs {
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "find id customer", description = "find a specific customer by id", tags = "findById",
+            summary = "find customer by id", description = "find a specific customer by id", tags = "findById",
             responses = {@ApiResponse(
                     description = "Success",
                     responseCode = "200",
@@ -56,7 +56,7 @@ public interface CustomerControllerDocs {
     ResponseEntity<CustomerResponse> findById(@PathVariable Long id);
 
     @GetMapping("/cpf")
-    @Operation(summary = "Find a cpf customer", description = "find a unique person from cpf"
+    @Operation(summary = "Find customer by cpf", description = "find a unique person from cpf"
             , responses = {@ApiResponse(
             description = "success",
             responseCode = "200",
@@ -68,7 +68,7 @@ public interface CustomerControllerDocs {
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)})
     ResponseEntity<CustomerResponse> findByCpf(@PathVariable String cpf);
 
-    @Operation(summary = "Find a email customer", description = "find a unique person from email"
+    @Operation(summary = "Find customer by email", description = "find a unique person from email"
             , responses = {@ApiResponse(
             description = "success",
             responseCode = "200",
@@ -82,7 +82,7 @@ public interface CustomerControllerDocs {
     ResponseEntity<CustomerResponse> findByEmail(@PathVariable String email);
 
     @GetMapping("/name")
-    @Operation(summary = "find specific name", description = "find specific name",
+    @Operation(summary = "find customer by name", description = "find specific name",
             tags = {"name"}
             , responses = {
             @ApiResponse(
@@ -103,7 +103,7 @@ public interface CustomerControllerDocs {
     ResponseEntity<List<CustomerResponse>> findByNome(@PathVariable String name);
 
     @GetMapping("/phone_number")
-    @Operation(summary = "find phone number", description = "finds all used number",
+    @Operation(summary = "find customers by phone number", description = "finds all used number",
             tags = {"People"}
             , responses = {
             @ApiResponse(
@@ -123,7 +123,7 @@ public interface CustomerControllerDocs {
     })
     ResponseEntity<List<CustomerResponse>> findByPhoneNumber(@PathVariable String phoneNumber);
 
-    @Operation(summary = "find birthDate", description = "find birthDate",
+    @Operation(summary = "find customer by birthDate", description = "find customers by birthDates",
             tags = {"BirthDate"}
             , responses = {
             @ApiResponse(
@@ -145,7 +145,7 @@ public interface CustomerControllerDocs {
     ResponseEntity<List<CustomerResponse>> findByBirthDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate);
 
     @GetMapping("/createdAt")
-    @Operation(summary = "find customer createdAt", description = "find created date",
+    @Operation(summary = "find customers by created date", description = "find by created date",
             tags = {"CreatedAt"}
             , responses = {
             @ApiResponse(
@@ -167,7 +167,7 @@ public interface CustomerControllerDocs {
                                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate);
 
     @GetMapping("/updatedAt")
-    @Operation(summary = "find updated date customer", description = "find updated date",
+    @Operation(summary = "find customers by updated date", description = "find customers by updated date",
             tags = {"UpdatedAt"}
             , responses = {
             @ApiResponse(
@@ -189,7 +189,7 @@ public interface CustomerControllerDocs {
                                                            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate);
 
     @PostMapping
-    @Operation(summary = "Created customer", description = "Insert customer in dataBase",
+    @Operation(summary = "create new customer", description = "Insert customer in dataBase",
             tags = {"Insert"}
             , responses = {
             @ApiResponse(
@@ -210,11 +210,11 @@ public interface CustomerControllerDocs {
     ResponseEntity<CustomerResponse> insert(@Valid @RequestBody CustomerRequest request);
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update customer", description = "Update customer data",
+    @Operation(summary = "Update customer by id", description = "Update customer data",
             tags = {"Update"}
             , responses = {
             @ApiResponse(
-                    description = "Created",
+                    description = "success",
                     responseCode = "200",
                     content = {
                             @Content(
@@ -231,7 +231,7 @@ public interface CustomerControllerDocs {
     ResponseEntity<CustomerResponse> update(@PathVariable Long id, @Valid CustomerRequest request);
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete customer", description = "Delete customer in dataBase",
+    @Operation(summary = "Delete customer by id", description = "Delete customer in dataBase",
             tags = {"Delete"}
             , responses = {
             @ApiResponse(
