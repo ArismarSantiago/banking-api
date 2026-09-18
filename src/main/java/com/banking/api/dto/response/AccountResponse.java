@@ -1,19 +1,13 @@
 package com.banking.api.dto.response;
 
-import com.banking.api.entity.Agency;
-import com.banking.api.entity.Customer;
-import com.banking.api.entity.PixKey;
-import com.banking.api.entity.Transaction;
 import com.banking.api.enums.AccountStatus;
 import com.banking.api.enums.AccountType;
-import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
 
-public class AccountResponse {
+public class AccountResponse extends RepresentationModel<AccountResponse> {
     private Long id;
     private String accountNumber;
     private BigDecimal balance;
@@ -39,9 +33,6 @@ public class AccountResponse {
         this.updatedAt = updatedAt;
         this.customer = customer;
         this.agency = agency;
-    }
-
-    public AccountResponse(Long id, String name) {
     }
 
 

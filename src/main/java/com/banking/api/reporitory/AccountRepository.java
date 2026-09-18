@@ -2,6 +2,7 @@ package com.banking.api.reporitory;
 
 import com.banking.api.dto.response.AccountResponse;
 import com.banking.api.entity.Account;
+import com.banking.api.entity.PixKey;
 import com.banking.api.enums.AccountStatus;
 import com.banking.api.enums.AccountType;
 import jakarta.persistence.*;
@@ -21,9 +22,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByAccountNumber(String accountNumber);
     List<Account> findByCreatedAtBetween (LocalDateTime initial, LocalDateTime finalDate);
     List<Account> findByUpdatedAtBetween(LocalDateTime initial, LocalDateTime finalDate);
-
     Boolean existsByAccountNumber(String accountNumber);
-
 
 
 

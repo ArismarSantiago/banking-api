@@ -1,13 +1,10 @@
 package com.banking.api.dto.response;
-
-import com.banking.api.entity.Account;
-import jakarta.persistence.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
-import java.util.Objects;
 
 
-public class AgencyResponse {
+public class AgencyResponse extends RepresentationModel<AgencyResponse> {
 
     private Long id;
     private String code;

@@ -1,29 +1,26 @@
 package com.banking.api.service;
 
+import com.banking.api.controller.TransferController;
 import com.banking.api.dto.mapper.TransferMapper;
 import com.banking.api.dto.request.TransferRequest;
-import com.banking.api.dto.response.AccountResponse;
-import com.banking.api.dto.response.CustomerSummaryResponse;
-import com.banking.api.dto.response.TransactionResponse;
-import com.banking.api.dto.response.TransferResponse;
+import com.banking.api.dto.response.*;
 import com.banking.api.entity.Account;
-import com.banking.api.entity.PixKey;
 import com.banking.api.entity.Transfer;
 import com.banking.api.enums.AccountType;
 import com.banking.api.enums.TransferStatus;
 import com.banking.api.enums.TransferType;
+import com.banking.api.exceptions.ResourceNotFoundException;
+import com.banking.api.exceptions.TransferAccountExceptions;
 import com.banking.api.reporitory.AccountRepository;
 import com.banking.api.reporitory.PixKeyRepository;
 import com.banking.api.reporitory.TransferRepository;
-import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Positive;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 public class TransferService {
@@ -38,11 +35,24 @@ public class TransferService {
         this.pixKayRepository = pixKayRepository;
     }
 
-    public Transfer findById(Long id){
+    // auxiliar method
+    public Transfer findByEntityId(Long id){
        return repository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Id nao encontrado no sistema! ID:" + id));
+                .orElseThrow(()-> new ResourceNotFoundException("Não localizamos id de transferencia!", "Transfer", id));
+    }
+    public List<TransferResponse> findAll(){
+        var dto = repository.findAll().stream().
+                map(TransferMapper::toResponse)
+                .toList();
+       dto.forEach(this::addLinkHateoas);
+       return dto;
+    }
 
-
+    public TransferResponse findById(Long id){
+            Transfer entity = findByEntityId(id);
+            var dto = TransferMapper.toResponse(entity);
+            addLinkHateoas(dto);
+            return dto;
     }
 
     public  List<TransferResponse> findBySourceAccountId(Long accountId){
@@ -54,46 +64,78 @@ public class TransferService {
                 .stream().map(TransferMapper::toResponse).toList();
     }
 
+
     @Transactional
     public TransferResponse transfer(TransferRequest request, Long sourceAccountId) {
-        Account sourceAccount = accountRepository.findById(sourceAccountId)
-                .orElseThrow(() -> new RuntimeException("Source account not found"));
-        Account destinationAccount = accountRepository.findById(request.getDestinationAccountId())
-                .orElseThrow(() -> new RuntimeException("Destination account not found"));
+       Account sourceAccount = accountRepository.findById(sourceAccountId)
+               .orElseThrow(()-> new ResourceNotFoundException("Conta não encontrada!", "Account", sourceAccountId));
 
-        BigDecimal totalDebit = request.getAmount();
+       Account destinationAccount = validatorDestinationAccount(request);
+       validatorTotalValue(request, sourceAccount);
 
-        if (sourceAccount.getType() == AccountType.CHECKING){
-            totalDebit = totalDebit.add(BigDecimal.valueOf(1.5));
+       if (!(request.getType() == TransferType.INTERNAL)){
+           throw new TransferAccountExceptions("\"Somente é possível transferir para o mesmo ID em transferências internas",
+                   request.getType(), sourceAccountId, destinationAccount.getId());
+       }
+       sourceAccount.setBalance(destinationAccount.getBalance().subtract(validatorTotalValue(request, sourceAccount)));
+       destinationAccount.setBalance(destinationAccount.getBalance().add(request.getAmount()));
+       Transfer entity = TransferMapper.toEntity(request, sourceAccount, destinationAccount);
+       entity.setStatus(TransferStatus.COMPLETED);
+       Transfer saveEntity = repository.save(entity);
+        var dto = TransferMapper.toResponse(saveEntity);
+        addLinkHateoas(dto);
+        return dto;
+    }
+
+
+    public Account validatorDestinationAccount(TransferRequest request) {
+        String accountMethodPayment = request.getDestinationTypePayment();
+        Account account = new Account();
+        switch (request.getType()) {
+            case TED:
+            account = accountRepository.findByAccountNumber(accountMethodPayment);
+            if (account == null)throw new ResourceNotFoundException("Conta não encontrada", "Account", accountMethodPayment);
+            request.setType(TransferType.TED);
+            break;
+            case PIX:
+            account = pixKayRepository.findByKeyValue(accountMethodPayment).getAccount();
+            if (account == null)throw new ResourceNotFoundException("Conta não encontrada", "Account", accountMethodPayment);
+            request.setType(TransferType.PIX);
+            break;
+            default://INTERNAL
+                account = accountRepository.findByAccountNumber(accountMethodPayment);
+                if (account == null)throw new ResourceNotFoundException("Conta não encontrada", "Account", accountMethodPayment);
+                request.setType(TransferType.valueOf("INTERNAL"));
+                break;
         }
-
-        if (request.getType() == TransferType.PIX){
-           PixKey pixKey = pixKayRepository.findByKeyValue(request.getKeyPix());
-           if (pixKey == null){
-               throw new RuntimeException("Essa chave não esta ativa!");
-           }
-        }
-
-        if (request.getType() == TransferType.TED){
-            BigDecimal taxed = request.getAmount().multiply(BigDecimal.valueOf(0.02));
-            totalDebit.add(taxed);
-        }
-        if (sourceAccount.getBalance().compareTo(totalDebit) < 0){
-            throw new RuntimeException("Saldo insuficiente para realizar essa transferencia");
-        }
-
-
-        destinationAccount.getBalance().add(request.getAmount());
-        request.setAmount(totalDebit);
-        Transfer entity = TransferMapper.toEntity(request, sourceAccount, destinationAccount);
-        entity.setStatus(TransferStatus.COMPLETED);
-        Transfer saveEntity = repository.save(entity);
-
-        return TransferMapper.toResponse(saveEntity);
+        return account;
     }
 
 
 
+    public BigDecimal validatorTotalValue(TransferRequest request, Account sourceAccount){
+        BigDecimal transferTax = request.getAmount();
+        if (sourceAccount.getType() == AccountType.CHECKING){
+            transferTax = transferTax.add(BigDecimal.valueOf(5.5));
+        }
+        transferTax = switch (request.getType()) {
+            case TED -> transferTax.multiply(BigDecimal.valueOf(0.03));
+            case PIX -> transferTax.add(BigDecimal.ZERO);
+            default ->// INTERNAL
+                    transferTax.add(BigDecimal.ZERO);
+        };
+        return transferTax;
+        }
+
+        public void addLinkHateoas(TransferResponse dto){
+        Long id = dto.getId();
+
+        var linkHateoasController = linkTo(TransferController.class);
+
+        dto.add(linkHateoasController.slash(id).withRel("findById").withType("GET"));
+        dto.add(linkHateoasController.withRel("findAll").withType("GET"));
+        dto.add(linkHateoasController.withRel("transfer").withHref("http://localhost:8080/account/"+dto.getSourceAccount().getId()+"/transfers").withType("POST"));
+        }
 
     }
 

@@ -3,10 +3,12 @@ package com.banking.api.entity;
 import com.banking.api.enums.PixKeyType;
 import jakarta.persistence.*;
 import jdk.jfr.BooleanFlag;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "pix_kays_tb")
 public class PixKey {
@@ -20,6 +22,7 @@ public class PixKey {
     private String keyValue;
     @Column(nullable = false)
     private Boolean active;
+    @CreatedDate
     private LocalDateTime createdAt;
 
     public PixKey() {
@@ -37,6 +40,10 @@ public class PixKey {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 
     public PixKeyType getKeyType() {
         return keyType;

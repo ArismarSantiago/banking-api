@@ -10,7 +10,7 @@ public class TransactionMapper {
         response.setAmount(entity.getAmount());
         response.setId(entity.getId());
         response.setBalanceAfter(entity.getBalanceAfter());
-        response.setCreatedAt(entity.getCreatedAt());
+        response.setCreatedAt(entity.getCreatedAt().toLocalDate());
         response.setDescription(entity.getDescription());
 
         return response;

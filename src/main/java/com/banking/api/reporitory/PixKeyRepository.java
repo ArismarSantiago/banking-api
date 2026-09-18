@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PixKeyRepository extends JpaRepository<PixKey, Long> {
     PixKey findByKeyValue(String keyValue);
-    Boolean existsByActive(Boolean active);
+    Boolean existsByKeyValue(String KeyValue);
 }

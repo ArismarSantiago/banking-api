@@ -12,13 +12,21 @@ spring:
       ddl-auto: none
     show-sql: true
     properties:
-        format_sql: true
+      format_sql: true
     deferred-datasource-initialization: true
-
 
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
 
 springdoc:
   api-docs:

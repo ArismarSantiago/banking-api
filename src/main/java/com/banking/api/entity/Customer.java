@@ -1,5 +1,6 @@
 package com.banking.api.entity;
 
+import com.banking.api.enums.CustomerStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,6 +29,9 @@ public class Customer {
     private String phoneNumber;
     @Column(length = 12, nullable = false)
     private LocalDate birthDate;
+    @Enumerated(EnumType.STRING)
+    private CustomerStatus status;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -39,17 +43,17 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, LocalDateTime createdAt, LocalDateTime updateAt) {
+    public Customer(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, CustomerStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
+        this.status = status;
         this.createdAt = createdAt;
-        this.updatedAt = updateAt;
+        this.updatedAt = updatedAt;
     }
-
 
     @OneToMany(mappedBy = "customer")
     private List<Account> accounts;
@@ -59,7 +63,14 @@ public class Customer {
         return accounts;
     }
 
-    
+    public CustomerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CustomerStatus status) {
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
     }

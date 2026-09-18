@@ -10,11 +10,11 @@ import java.util.List;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    List<Customer> findByName(String name);
+    List<Customer> findByNameStartingWith(String name);
     List<Customer> findByPhoneNumber(String phoneNumber);
     List<Customer> findByBirthDate(LocalDate birthDate);
-    List<Customer> findByCreatedAt(LocalDateTime createdAt);
-    List<Customer> findByUpdateAt(LocalDateTime updatedAt);
+    List<Customer> findByCreatedAtBetween(LocalDateTime initial, LocalDateTime finale);
+    List<Customer> findByUpdateAtBetween(LocalDateTime initialDate, LocalDateTime finaleDate);
 
     Customer findByEmail(String email);
     Customer findByCpf(String cpf);

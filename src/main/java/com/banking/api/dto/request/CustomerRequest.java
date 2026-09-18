@@ -1,7 +1,10 @@
 package com.banking.api.dto.request;
 
 import com.banking.api.entity.Account;
+import com.banking.api.enums.CustomerStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -47,20 +50,29 @@ public class CustomerRequest {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private CustomerStatus status;
+
     public CustomerRequest() {
     }
 
-    public CustomerRequest(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, LocalDateTime createdAt, LocalDateTime updateAt) {
+    public CustomerRequest(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, CustomerStatus status) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
-        this.createdAt = createdAt;
-        this.updatedAt = updateAt;
+        this.status = status;
     }
 
+    public CustomerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CustomerStatus status) {
+        this.status = status;
+    }
 
     private List<AccountRequest> accounts;
 

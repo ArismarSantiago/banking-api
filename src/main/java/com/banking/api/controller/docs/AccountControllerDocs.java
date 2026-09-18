@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +88,8 @@ public interface AccountControllerDocs {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    ResponseEntity<List<AccountResponse>> findByCreatedAtBetween(@PathVariable LocalDate createdAt);
+    ResponseEntity<List<AccountResponse>> findByCreatedAtBetween(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initialDate,
+                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate);
 
 
     @Operation(
@@ -105,7 +107,8 @@ public interface AccountControllerDocs {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    ResponseEntity<List<AccountResponse>> findByUpdatedAtBetween(@PathVariable LocalDate updatedAt);
+    ResponseEntity<List<AccountResponse>> findByUpdatedAtBetween(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initialDate,
+                                                                 @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate);
 
 
     @Operation(summary = "Insert account", description = "Insert account in database", tags = "Insert account",

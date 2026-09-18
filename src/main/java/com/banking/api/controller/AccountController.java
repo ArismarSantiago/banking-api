@@ -6,14 +6,9 @@ import com.banking.api.dto.request.WithdrawRequest;
 import com.banking.api.dto.response.AccountResponse;
 import com.banking.api.dto.response.TransactionResponse;
 import com.banking.api.service.AccountService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -44,31 +39,28 @@ public class AccountController implements com.banking.api.controller.docs.Accoun
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/accout_type")
-//    public ResponseEntity<List<AccountResponse>> findByAccountType(@PathVariable AccountType type) {
-//        List<AccountResponse> list = service.findByAccountType(type);
-//        return ResponseEntity.ok(list);
-//    }
 
-    @GetMapping("/account_number")
+    @GetMapping("/accountNumber")
     @Override
-    public ResponseEntity<AccountResponse> findByAccountNumber(@PathVariable String accountNumber) {
+    public ResponseEntity<AccountResponse> findByAccountNumber(@RequestParam(name = "accountNumber", required = false) String accountNumber) {
         AccountResponse response = service.findByAccountNumber(accountNumber);
         return ResponseEntity.ok(response);
     }
 
 
-    @GetMapping("/created_at_account")
+    @GetMapping("/createdAt")
     @Override
-    public ResponseEntity<List<AccountResponse>> findByCreatedAtBetween(@PathVariable LocalDate createdAt) {
-        List<AccountResponse> list = service.findByCreatedAt(createdAt);
+    public ResponseEntity<List<AccountResponse>> findByCreatedAtBetween(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initialDate,
+                                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate) {
+        List<AccountResponse> list = service.findByCreatedAtBetween(initialDate, finaleDate);
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/updated_at_account")
+    @GetMapping("/updatedAt")
     @Override
-    public ResponseEntity<List<AccountResponse>> findByUpdatedAtBetween(@PathVariable LocalDate updatedAt){
-        List<AccountResponse> list = service.findByUpdatedAtBetween(updatedAt);
+    public ResponseEntity<List<AccountResponse>> findByUpdatedAtBetween(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate initialDate,
+                                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate finaleDate){
+        List<AccountResponse> list = service.findByUpdatedAtBetween(initialDate, finaleDate);
 
         return ResponseEntity.ok(list);
     }
@@ -110,9 +102,9 @@ public class AccountController implements com.banking.api.controller.docs.Accoun
         return ResponseEntity.created(uri).body(response);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @Override
-    public ResponseEntity<Void> delete(Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

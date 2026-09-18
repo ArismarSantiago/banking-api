@@ -1,24 +1,20 @@
 package com.banking.api.service;
 
+import com.banking.api.controller.AccountController;
 import com.banking.api.dto.mapper.AccountMapper;
 import com.banking.api.dto.mapper.TransactionMapper;
-import com.banking.api.dto.mapper.TransferMapper;
 import com.banking.api.dto.request.AccountRequest;
 import com.banking.api.dto.request.DepositRequest;
-import com.banking.api.dto.request.TransferRequest;
 import com.banking.api.dto.request.WithdrawRequest;
 import com.banking.api.dto.response.AccountResponse;
-import com.banking.api.dto.response.AgencySummaryResponse;
 import com.banking.api.dto.response.TransactionResponse;
-import com.banking.api.dto.response.TransferResponse;
 import com.banking.api.entity.*;
-import com.banking.api.enums.AccountStatus;
-import com.banking.api.enums.AccountType;
-import com.banking.api.enums.TransactionType;
-import com.banking.api.enums.TransferType;
+import com.banking.api.enums.*;
+import com.banking.api.exceptions.AccountValueException;
+import com.banking.api.exceptions.AccountStatusException;
+import com.banking.api.exceptions.DeleteExceptions;
+import com.banking.api.exceptions.ResourceNotFoundException;
 import com.banking.api.reporitory.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,7 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Service
 public class AccountService {
@@ -47,37 +44,44 @@ public class AccountService {
     //metodo auxiliar
     public Account findByEntityId(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Id não encontrado no banco de dados! ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Conta não encontrada!","Account", id));
     }
 
     public List<AccountResponse> findAll() {
-        return repository.findAll().stream()
+        List<AccountResponse> list = repository.findAll().stream()
                 .map(AccountMapper::toResponse)
                 .toList();
+        list.forEach(this::addLinkHateoas);
+        return list;
     }
 
     public AccountResponse findById(Long id) {
         Account entity = findByEntityId(id);
-        return AccountMapper.toResponse(entity);
+        var dto = AccountMapper.toResponse(entity);
+        addLinkHateoas(dto);
+        return dto;
     }
 
     public AccountResponse findByAccountNumber(String accountNumber){
         Account account = repository.findByAccountNumber(accountNumber);
+        if (account == null){
+            throw new ResourceNotFoundException("Conta não encontrada!", "Account", accountNumber);
+        }
 
         return AccountMapper.toResponse(account);
     }
 
 
-    public List<AccountResponse> findByCreatedAt (LocalDate createdAt){
-        LocalDateTime initial = createdAt.atStartOfDay();
-        LocalDateTime finalDate = createdAt.atTime(LocalTime.MAX);
-        return repository.findByCreatedAtBetween(initial, finalDate)
+    public List<AccountResponse> findByCreatedAtBetween(LocalDate initialDate, LocalDate finaleDate){
+        LocalDateTime initialDateTime = initialDate.atStartOfDay();
+        LocalDateTime finalDateTime = finaleDate.atTime(LocalTime.MAX);
+        return repository.findByCreatedAtBetween(initialDateTime, finalDateTime)
                 .stream().map(AccountMapper::toResponse).toList();
     }
-    public List<AccountResponse> findByUpdatedAtBetween (LocalDate updatedAt){
-        LocalDateTime initial = updatedAt.atStartOfDay();
-        LocalDateTime finalDate = updatedAt.atTime(LocalTime.MAX);
-        return repository.findByUpdatedAtBetween(initial, finalDate)
+    public List<AccountResponse> findByUpdatedAtBetween (LocalDate initialDate, LocalDate finaleDate){
+        LocalDateTime initialDateTime = initialDate.atStartOfDay();
+        LocalDateTime finalDateTime = finaleDate.atTime(LocalTime.MAX);
+        return repository.findByUpdatedAtBetween(initialDateTime, finalDateTime)
                 .stream().map(AccountMapper::toResponse).toList();
     }
 
@@ -86,10 +90,10 @@ public class AccountService {
     public AccountResponse insert(AccountRequest request, Long agencyId, Long customerId){
 
         Agency agency = agencyRepository.findById(agencyId)
-                .orElseThrow(()-> new RuntimeException("Agencia não localizada! ID: " + agencyId));
+                .orElseThrow(()-> new ResourceNotFoundException("Agencia não encontrada!","Agency", agencyId));
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(()-> new RuntimeException("Usuario nao localizado! ID: " + customerId));
+                .orElseThrow(()-> new ResourceNotFoundException("Customer não encontrado", "Customer", customerId));
 
         Account entity = AccountMapper.toEntity(request, agency, customer);
         entity.setStatus(AccountStatus.ACTIVE);
@@ -107,15 +111,14 @@ public class AccountService {
 
     public TransactionResponse withdraw(WithdrawRequest request) {
         Account entity = repository.findById(request.getAccountId())
-                .orElseThrow(() -> new RuntimeException("Conta nao encontrada em nosso sistema!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conta não encontrada!","Account", request.getAccountId()));
 
         if (entity.getStatus() != AccountStatus.ACTIVE) {
-            throw new RuntimeException("A conta não esta ativa!");
+            throw new AccountStatusException(entity.getAccountNumber(), entity.getStatus());
         }
 
         if (entity.getBalance().compareTo(request.getAmount()) <= 0) {
-            throw new RuntimeException("Seu saldo é insuficiente para realizar esse saque! \nSaldo em conta: "
-                    + entity.getBalance() + "\nValor solicitado Solicitado: " + request.getAmount());
+            throw new AccountValueException("Seu saldo é insuficiente para realizar esse saque!", entity.getAccountNumber(), entity.getBalance(), request.getAmount(), TransactionType.WITHDRAWAL);
         }
 
         entity.setBalance(entity.getBalance().subtract(request.getAmount()));
@@ -128,19 +131,21 @@ public class AccountService {
         transaction.setBalanceAfter(entity.getBalance());
 
         transactionRepository.save(transaction);
-        return TransactionMapper.toResponse(transaction);
+        var dto = TransactionMapper.toResponse(transaction);
+        addLinkHateoasTransaction(dto);
+        return dto;
 
     }
 
     public TransactionResponse deposit(DepositRequest request){
         Account entity = repository.findById(request.getAccountId())
-                .orElseThrow(()-> new RuntimeException("Conta não encontrada! Id: "  + request.getAccountId()));
+                .orElseThrow(()-> new ResourceNotFoundException("Conta não encontrada!","Account", request.getAccountId()));
 
         if(request.getAmount().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException("O valor precisa ser maior que 0!");
+            throw new AccountValueException("O valor precisa ser maior que 0!", entity.getAccountNumber(), null, request.getAmount(), TransactionType.DEPOSIT);
         }
         if (entity.getStatus() != AccountStatus.ACTIVE){
-            throw new RuntimeException("Sua conta não esta ativa, ative-a primeiro antes de depositar");
+            throw new AccountStatusException(entity.getAccountNumber(), entity.getStatus());
         }
 
         entity.setBalance(entity.getBalance().add(request.getAmount()));
@@ -153,15 +158,19 @@ public class AccountService {
         transaction.setType(TransactionType.DEPOSIT);
         transaction.setAmount(request.getAmount());
         transactionRepository.save(transaction);
-        return TransactionMapper.toResponse(transaction);
+        var dto = TransactionMapper.toResponse(transaction);
+        addLinkHateoasTransaction(dto);
+        return dto;
     }
 
     public void delete (Long id){
         Account entity = findByEntityId(id);
-        if(entity.getBalance().compareTo(BigDecimal.TWO) <= 0){
-            throw new RuntimeException("Você precisa retirar todo o saldo da conta antes de efetuar a exclusao da conta!");
+        if(entity.getBalance().compareTo(BigDecimal.TWO) > 0){
+            throw new DeleteExceptions("Não é possivel excluir a sua conta no momento!",
+                    "O saldo precisa ser zerado antes da exclusão!", entity.getBalance(), DeleteType.ACCOUNT, entity.getAccountNumber(), null);
         }
-        repository.deleteById(id);
+        entity.setStatus(AccountStatus.CLOSED);
+        repository.save(entity);
     }
 
     public AccountResponse update(Long id, AccountRequest request){
@@ -185,6 +194,26 @@ public class AccountService {
         } while (repository.existsByAccountNumber(String.valueOf(number)));
 
         return String.format("%06d", number);
+    }
+
+    public void addLinkHateoas(AccountResponse dto) {
+        Long id = dto.getId();
+
+        var LinkHateoas = linkTo(AccountController.class);
+        dto.add(LinkHateoas.slash(id).withSelfRel().withType("GET"));
+        dto.add(LinkHateoas.withRel("findAll").withType("GET"));
+        dto.add(LinkHateoas.withRel("insert").withType("POST"));
+        dto.add(LinkHateoas.slash(id).withRel("update").withType("PUT"));
+        dto.add(LinkHateoas.slash(id).withRel("delete").withType("DELETE"));
+        dto.add(LinkHateoas.withRel("findByCreatedAtBetween").withType("GET"));
+    }
+
+    public void addLinkHateoasTransaction(TransactionResponse dto){
+        Long id = dto.getId();
+
+        var linkToController = linkTo(AccountController.class);
+        dto.add(linkToController.slash(id).withRel("withdraw").withType("POST"));
+        dto.add(linkToController.slash(id).withRel("deposit").withType("POST"));
     }
 
 }

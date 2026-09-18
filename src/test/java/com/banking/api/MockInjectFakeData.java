@@ -4,6 +4,7 @@ import com.banking.api.entity.Account;
 import com.banking.api.entity.Agency;
 import com.banking.api.entity.Customer;
 import com.banking.api.enums.AccountStatus;
+import com.banking.api.enums.CustomerStatus;
 
 
 import java.math.BigDecimal;
@@ -22,13 +23,14 @@ public class MockInjectFakeData {
         account.setAccountNumber(String.valueOf(i));
         account.setStatus(AccountStatus.ACTIVE);
         account.setBalance(new BigDecimal(200));
-        account.setUpdatedAt(LocalDateTime.now());
-        account.setUpdatedAt(LocalDateTime.now());
+        account.setCreatedAt(LocalDateTime.of(2027, 11, 21, 0, 0));
+        account.setUpdatedAt(LocalDateTime.of(2027, 11, 21, 0, 0));
         account.setCustomer(new Customer(convertToLong,
-                "Name" + i, "07033283105",
-                "arismar@gmail.com", "65999223208",
-                LocalDate.now(), LocalDateTime.now(), LocalDateTime.now()));
-        account.setAgency(new Agency(convertToLong, "0001", "Cuiaba", "agency", "Mato-Grosso"));
+                "Name" + i, "00000000000",
+                "namedNamed@gmail.com", "00000000000",
+                LocalDate.now(), CustomerStatus.ACTIVE, LocalDateTime.now(), LocalDateTime.now()));
+
+        account.setAgency(new Agency(1L, "0001", "Cuiaba", "agency", "Mato-Grosso"));
 
         return account;
     }

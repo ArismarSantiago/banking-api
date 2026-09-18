@@ -14,11 +14,13 @@ public class CustomerMapper {
         entity.setEmail(request.getEmail());
         entity.setPhoneNumber(request.getPhoneNumber());
         entity.setBirthDate(request.getBirthDate());
+        entity.setStatus(request.getStatus());
         return entity;
     }
 
     public static CustomerResponse toResponse(Customer entity){
         CustomerResponse response = new CustomerResponse();
+        response.setId(entity.getId());
         response.setName(entity.getName());
         response.setCpf(entity.getCpf());
         response.setEmail(entity.getEmail());

@@ -1,14 +1,19 @@
 package com.banking.api.dto.mapper;
 
 import com.banking.api.dto.request.PixKeyRequest;
+import com.banking.api.dto.response.AccountResponse;
+import com.banking.api.dto.response.AccountSummaryResponse;
 import com.banking.api.dto.response.PixKeyResponse;
+import com.banking.api.entity.Account;
 import com.banking.api.entity.PixKey;
 
 public class PixKeyMapper {
 
-    public static PixKey toEntity(PixKeyRequest request){
+    public static PixKey toEntity(PixKeyRequest request, Account account){
         PixKey entity = new PixKey();
         entity.setKeyType(request.getKeyType());
+        entity.setKeyValue(request.getKeyValue());
+        entity.setAccount(account);
         return entity;
     }
 
@@ -19,6 +24,7 @@ public class PixKeyMapper {
         response.setKeyType(entity.getKeyType());
         response.setKeyValue(entity.getKeyValue());
         response.setCreatedAt(entity.getCreatedAt());
+
         return response;
     }
 

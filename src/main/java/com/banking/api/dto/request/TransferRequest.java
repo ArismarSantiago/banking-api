@@ -21,46 +21,16 @@ public class TransferRequest {
     @NotNull(message = "Digite o tipo da transferencia!")
     @Enumerated(EnumType.STRING)
     private TransferType type;
-    @NotNull(message = "Digite o id da conta de destino")
-    private Long destinationAccountId;
-
-    private String keyPix;
+    @NotNull(message = "Digite numero da conta ou chave pix")
+    private String destinationTypePayment;
 
     public TransferRequest() {
     }
 
-
-    public TransferRequest(BigDecimal amount, TransferType type,  Long destinationAccountId, String keyPix) {
+    public TransferRequest(BigDecimal amount, TransferType type, String destinationTypePayment) {
         this.amount = amount;
         this.type = type;
-        this.destinationAccountId = destinationAccountId;
-        this.keyPix = keyPix;
-    }
-
-    public void setDestinationAccountId(Long destinationAccountId) {
-        this.destinationAccountId = destinationAccountId;
-    }
-
-    public String getKeyPix() {
-        return keyPix;
-    }
-
-    public void setKeyPix(String keyPix) {
-        this.keyPix = keyPix;
-    }
-
-    public void setType(TransferType type) {
-        this.type = type;
-    }
-
-
-    public TransferType getType() {
-        return type;
-    }
-
-
-    public Long getDestinationAccountId() {
-        return destinationAccountId;
+        this.destinationTypePayment = destinationTypePayment;
     }
 
     public BigDecimal getAmount() {
@@ -71,5 +41,19 @@ public class TransferRequest {
         this.amount = amount;
     }
 
+    public TransferType getType() {
+        return type;
+    }
 
+    public void setType(TransferType type) {
+        this.type = type;
+    }
+
+    public String getDestinationTypePayment() {
+        return destinationTypePayment;
+    }
+
+    public void setDestinationTypePayment(String destinationTypePayment) {
+        this.destinationTypePayment = destinationTypePayment;
+    }
 }

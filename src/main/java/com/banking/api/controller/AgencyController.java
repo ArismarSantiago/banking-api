@@ -67,7 +67,7 @@ public class AgencyController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<AgencyResponse> findByCode(@PathVariable String code){
+    public ResponseEntity<AgencyResponse> findByCode(@RequestParam(name = "code") String code){
         AgencyResponse response = service.findByCode(code);
         return ResponseEntity.ok(response);
     }
@@ -87,7 +87,7 @@ public class AgencyController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<AgencyResponse> findByName(@PathVariable String name){
+    public ResponseEntity<AgencyResponse> findByName(@RequestParam(name = "name") String name){
         AgencyResponse response = service.findByName(name);
         return ResponseEntity.ok(response);
     }
@@ -106,7 +106,7 @@ public class AgencyController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<AgencyResponse> findByCity(@PathVariable String city){
+    public ResponseEntity<AgencyResponse> findByCity(@RequestParam(name = "city") String city){
         AgencyResponse response = service.findByCity(city);
 
         return ResponseEntity.ok(response);
@@ -127,7 +127,7 @@ public class AgencyController {
                     @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
                     @ApiResponse(description = "Internal Server Error", responseCode = "500", content = @Content)
             })
-    public ResponseEntity<AgencyResponse> findByState(@PathVariable String state){
+    public ResponseEntity<AgencyResponse> findByState(@RequestParam(name = "status") String state){
         AgencyResponse response = service.findByState(state);
         return ResponseEntity.ok(response);
     }

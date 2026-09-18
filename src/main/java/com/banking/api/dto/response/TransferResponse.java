@@ -5,13 +5,14 @@ import com.banking.api.enums.TransferStatus;
 import com.banking.api.enums.TransferType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 
-public class TransferResponse {
+public class TransferResponse extends RepresentationModel<TransferResponse> {
     private Long id;
     private BigDecimal amount;
     private TransferType type;

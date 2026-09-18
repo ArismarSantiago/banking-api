@@ -1,12 +1,15 @@
 package com.banking.api.dto.response;
 
 import com.banking.api.entity.Account;
+import com.banking.api.enums.CustomerStatus;
+import jakarta.persistence.EnumType;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CustomerResponse {
+public class CustomerResponse extends RepresentationModel<CustomerResponse> {
 
     private Long id;
     private String name;
@@ -16,27 +19,37 @@ public class CustomerResponse {
     private LocalDate birthDate;
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
+    private CustomerStatus status;
 
     public CustomerResponse() {
     }
 
-    public CustomerResponse(Long id, String name, String cpf, String email, String phoneNumber, LocalDate birthDate, LocalDateTime createdAt, LocalDateTime updateAt) {
+
+    public CustomerResponse(Long id, String name, String cpf, String email, String phoneNumber, LocalDateTime createdAt, LocalDate birthDate, CustomerStatus status, LocalDateTime updateAt) {
         this.id = id;
         this.name = name;
         this.cpf = cpf;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.birthDate = birthDate;
         this.createdAt = createdAt;
+        this.birthDate = birthDate;
+        this.status = status;
         this.updateAt = updateAt;
     }
-
 
     private List<AccountResponse> accounts;
 
 
     public List<AccountResponse> getAccounts() {
         return accounts;
+    }
+
+    public CustomerStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CustomerStatus status) {
+        this.status = status;
     }
 
     public Long getId() {
